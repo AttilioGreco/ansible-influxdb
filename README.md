@@ -14,6 +14,17 @@ This role requires Ansible 2.4 or higher.
 
 The role defines most of its variables in `defaults/main.yml`:
 
+|Variable Name| Default Value| Explain|
+|---| ---| --- |
+|influx_admin_username| admin| admin user name |
+|influx_admin_password| verys3cret| admin Password |
+|influx_metrics_username| metrics| not privileged username |
+|influx_metrics_password| veryverysecret| not privileged user password |
+|influx_metrics_database| metricsdb| db wit not prileged name have grant |
+
+
+
+
 ## Example Playbook
 
 Run with default vars:
