@@ -1,0 +1,24 @@
+---
+package:
+  influxdb:
+    installed: true
+port:
+  tcp:80:
+    listening: true
+    ip:
+      - 0.0.0.0
+service:
+  influxdb:
+    enabled: true
+    running: true
+user:
+  influxdb:
+    exists: true
+    groups:
+      - influxdb
+group:
+  influxdb:
+    exists: true
+process:
+  influxdb:
+    running: true
