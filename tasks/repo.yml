@@ -1,0 +1,41 @@
+---
+
+- name: Installing https transport for apt
+  apt: name=apt-transport-https state=present
+
+- name: Importing InfluxDB GPG signing key
+  apt_key: url=https://repos.influxdata.com/influxdb.key state=present
+
+- name: Adding InfluxDB repository
+  apt_repository: repo="deb https://repos.influxdata.com/ubuntu {{ ansible_distribution_release }} stable" state=present
+
+- name: Refreshing package list
+  apt: update_cache=yes
+
+- name: Creating admin account
+  shell: /usr/bin/influx -execute "CREATE USER {{ influx_admin_username }} WITH PASSWORD '{{ influx_admin_password }}' WITH ALL PRIVILEGES"
+  register: influx_create_admin
+  failed_when: influx_create_admin.rc != 0
+  ignore_errors: true
+
+- name: Creating metrics user
+  shell: /usr/bin/influx -username "{{ influx_admin_username }}" -password "{{ influx_admin_password }}" -execute "CREATE USER {{ influx_metrics_username }} WITH PASSWORD '{{ influx_metrics_password }}'"
+  register: influx_create_user
+  failed_when: influx_create_user.rc != 0
+
+
+- name: Creating metrics database
+  shell: /usr/bin/influx -username "{{ influx_admin_username }}" -password "{{ influx_admin_password }}" -execute "CREATE DATABASE {{ influx_metrics_database }}"
+  register: influx_create_database
+  failed_when: influx_create_database.rc != 0
+
+- name: Setting up retention for the database
+  shell: /usr/bin/influx -username "{{ influx_admin_username }}" -password "{{ influx_admin_password }}" -execute "CREATE RETENTION POLICY twoweeks ON {{ influx_metrics_database }} DURATION 15d REPLICATION 1 DEFAULT"
+  register: influx_set_retention
+  failed_when: influx_set_retention.rc != 0
+
+- name: Adding user permissions to the database
+  shell: /usr/bin/influx -username "{{ influx_admin_username }}" -password "{{ influx_admin_password }}" -execute "GRANT ALL ON {{ influx_metrics_database }} TO {{ influx_metrics_username }}"
+  register: influx_set_user_to_db
+  failed_when: influx_set_user_to_db.rc != 0
+

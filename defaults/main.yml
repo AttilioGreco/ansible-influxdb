@@ -1,2 +1,8 @@
 ---
 # defaults vars
+influx_admin_username: admin
+influx_admin_password: verys3cret
+influx_metrics_username: metrics
+influx_metrics_password: veryverysecret
+influx_metrics_database: metricsdb
+

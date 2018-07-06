@@ -1,2 +1,19 @@
----
-# tasks
+--- 
+
+- include: repo.yml
+
+- name: Installing InfluxDB
+  apt: name=influxdb state=present
+
+- name: Stopping InfluxDB
+  service: name=influxdb state=stopped
+
+- name: Writing configuration file
+  template: src=influxdb.conf.j2 dest=/etc/influxdb/influxdb.conf
+
+- name: Starting InfluxDB
+  service: name=influxdb state=started enabled=yes
+
+- name: Sleeping 5 seconds in order to let InfluxDB start correctly
+  pause: seconds=5
+
